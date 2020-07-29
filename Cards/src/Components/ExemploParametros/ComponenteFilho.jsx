@@ -1,10 +1,10 @@
 import React from "react";
 
-const Contador = () => {
+const Contador = (props) => {
 	return (
 		<div>
-			<h1>Hello World!</h1>
-			<h2>Let's learn React.js</h2>
+			<h2>Nomes:</h2>
+			{props.children}
 		</div>
 	);
 };

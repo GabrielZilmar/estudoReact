@@ -9,6 +9,7 @@ import Condicional from "./Components/basicos/Condicional.jsx";
 import ComponenteComFuncao from "./Components/basicos/ComponenteComFuncao.jsx";
 import Pai from "./Components/comunicacao/direta/Pai.jsx";
 import Super from "./Components/comunicacao/indireta/Super.jsx";
+import Input from "./Components/form/Input.jsx";
 
 import Card from "./Components/layout/Card.jsx";
 
@@ -51,6 +52,9 @@ export default (props) => (
 		</Card>
 		<Card titulo="Comunicação Indireta" color="#60047A">
 			<Super></Super>
+		</Card>
+		<Card titulo="Input" color="#F7F960">
+			<Input></Input>
 		</Card>
 	</div>
 );

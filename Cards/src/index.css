@@ -9,3 +9,7 @@ body {
 	background: -webkit-linear-gradient(to right, #414345, #232526);
 	background: linear-gradient(to right, #414345, #232526);
 }
+
+:root {
+	--verdeMegaSena: #00ee76;
+}

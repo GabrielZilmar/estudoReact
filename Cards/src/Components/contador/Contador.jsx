@@ -1,4 +1,10 @@
+import "./Contador.scss";
+
 import React, { Component } from "react";
+
+import Display from "./Display.jsx";
+import PassoForm from "./PassoForm.jsx";
+import Botoes from "./Botes.jsx";
 
 /*
 Caso importe só o React
@@ -33,26 +39,15 @@ export default class Contador extends Component {
 
 	render() {
 		return (
-			<div>
+			<div className="Contador">
 				<h2>Contador</h2>
-				<div>
-					<label>Passo: </label>
-					<input
-						type="number"
-						style={{ fontSize: "1.4rem", width: "60px" }}
-						value={this.state.passo}
-						onChange={(event) => {
-							this.change(+event.target.value);
-						}}
-					></input>
-				</div>
+				<PassoForm
+					passo={this.state.passo}
+					onPassoChange={this.change}
+				></PassoForm>
 
-				<h4>Valor: {this.state.valor}</h4>
-
-				<div>
-					<button onClick={this.inc}>+</button>
-					<button onClick={this.dec}>-</button>
-				</div>
+				<Display valor={this.state.valor}></Display>
+				<Botoes inc={this.inc} dec={this.dec}></Botoes>
 			</div>
 		);
 	}

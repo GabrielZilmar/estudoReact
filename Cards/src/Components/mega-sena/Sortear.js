@@ -1,7 +1,7 @@
 export const sorteia = (size) => {
 	let array = new Array(size);
 	array.fill(0);
-	array.map((num, index) => {
+	array = array.map(() => {
 		let gerado =
 			Math.floor(Math.random() * (Math.floor(60) - Math.ceil(1) + 1)) +
 			Math.ceil(1);
@@ -13,7 +13,7 @@ export const sorteia = (size) => {
 				) + Math.ceil(1);
 		}
 
-		array[index] = gerado;
+		return gerado;
 	});
 
 	array = array.sort((a, b) => {

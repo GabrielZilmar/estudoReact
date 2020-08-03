@@ -1,5 +1,7 @@
 import "./MegaSena.scss";
 
+import { sorteia } from "./Sortear.js";
+
 import React, { useState, useEffect } from "react";
 
 export default (props) => {
@@ -8,31 +10,6 @@ export default (props) => {
 	useEffect(() => {
 		setNumero(Array(6).fill(0));
 	}, []);
-
-	const sorteia = () => {
-		let array = new Array(6);
-		numeros.map((numero, index) => {
-			let gerado =
-				Math.floor(
-					Math.random() * (Math.floor(60) - Math.ceil(1) + 1)
-				) + Math.ceil(1);
-
-			while (array.indexOf(gerado) >= 0) {
-				gerado =
-					Math.floor(
-						Math.random() * (Math.floor(60) - Math.ceil(1) + 1)
-					) + Math.ceil(1);
-			}
-
-			array[index] = gerado;
-		});
-
-		array = array.sort((a, b) => {
-			return a - b;
-		});
-
-		setNumero(array);
-	};
 
 	return (
 		<div className="exibeSena">
@@ -44,7 +21,14 @@ export default (props) => {
 				);
 			})}
 			<div style={{ marginTop: 45 }}>
-				<button onClick={sorteia}>Sortear</button>
+				<button
+					onClick={() => {
+						const array = sorteia(6);
+						setNumero(array);
+					}}
+				>
+					Sortear
+				</button>
 			</div>
 		</div>
 	);

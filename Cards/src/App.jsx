@@ -11,6 +11,7 @@ import Pai from "./Components/comunicacao/direta/Pai.jsx";
 import Super from "./Components/comunicacao/indireta/Super.jsx";
 import Input from "./Components/form/Input.jsx";
 import Contador from "./Components/contador/Contador.jsx";
+import MegaSena from "./Components/mega-sena/MegaSena.jsx";
 
 import Card from "./Components/layout/Card.jsx";
 
@@ -65,6 +66,9 @@ export default (props) => (
 			</Card>
 			<Card titulo="Contador" color="#12345678">
 				<Contador passo={1} valor={0}></Contador>
+			</Card>
+			<Card titulo="Mega Sena" color="#00ee76">
+				<MegaSena></MegaSena>
 			</Card>
 		</div>
 	</div>

@@ -13,13 +13,15 @@ export default () => {
 
 	const request = async () => {
 		setLoading(true);
-		const users = await getUsers();
-		if (users.data) {
-			setUsers(users.data);
-		} else {
-			setErr(users.err);
-		}
-		setLoading(false);
+		setInterval(async () => {
+			const users = await getUsers();
+			if (users.data) {
+				setUsers(users.data);
+			} else {
+				setErr(users.err);
+			}
+			setLoading(false);
+		}, 2000);
 	};
 
 	if (loading) {

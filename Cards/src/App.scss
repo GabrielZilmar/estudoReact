@@ -1,0 +1,13 @@
+.App {
+	display: flex;
+	flex-direction: column;
+}
+
+.Cards {
+	display: flex;
+	flex-wrap: wrap;
+}
+
+.App h1 {
+	text-align: center;
+}

@@ -29,7 +29,7 @@ const useStyles = makeStyles((theme) => ({
     boxShadow: '6px 6px rgba(0, 0, 0, 0.2)',
   },
   avatar: {
-    margin: theme.spacing(1),
+    margin: '0 auto',
     backgroundColor: 'theme.palette.secondary.main',
   },
   form: {
@@ -64,7 +64,12 @@ export default function Login() {
         <Avatar className={classes.avatar} style={{marginTop: 20}}>
           <Lock />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography
+          component="h1"
+          variant="h5"
+          align="center"
+          style={{marginTop: 6}}
+        >
           Sign in
         </Typography>
         <FormControl className={classes.form}>

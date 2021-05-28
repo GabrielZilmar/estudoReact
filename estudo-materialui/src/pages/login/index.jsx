@@ -14,33 +14,19 @@ import {makeStyles} from '@material-ui/core/styles';
 import Container from '@material-ui/core/Container';
 import {FormControl} from '@material-ui/core';
 
-/**
- * Copyright Element
- * @return {Element} Copyright
- */
-function Copyright() {
-  return (
-    <Typography
-      variant="body2"
-      color="textSecondary"
-      align="center"
-      style={{padding: 10}}>
-      {'Copyright © '}
-      <Link color="inherit" href="https://google.com/">
-        Your Website
-      </Link>
-      {new Date().getFullYear()}
-    </Typography>
-  );
-}
+import Copyright from '../../components/copyright';
+
 
 const useStyles = makeStyles((theme) => ({
   paper: {
+    background: '#fff',
+    borderRadius: 10,
     display: 'flex',
     flexDirection: 'column',
     alignItems: 'center',
     color: '#000',
-    padding: 2,
+    padding: 12,
+    boxShadow: '6px 6px rgba(0, 0, 0, 0.2)',
   },
   avatar: {
     margin: theme.spacing(1),
@@ -54,8 +40,6 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(3, 0, 2),
   },
   container: {
-    'background': '#fff',
-    'borderRadius': 10,
     'margin': 0,
     'position': 'absolute',
     'top': '50%',
@@ -126,16 +110,16 @@ export default function Login() {
               </Link>
             </Grid>
             <Grid item>
-              <Link href="#" variant="body2">
+              <Link href="/register" variant="body2">
                 {'Don\'t have an account? Sign Up'}
               </Link>
             </Grid>
           </Grid>
         </FormControl>
+        <Box mt={8}>
+          <Copyright />
+        </Box>
       </div>
-      <Box mt={8}>
-        <Copyright />
-      </Box>
     </Container>
   );
 }

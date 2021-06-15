@@ -49,7 +49,7 @@ const styles = (theme)=>({
     margin: theme.spacing(3, 0, 2),
   },
   container: {
-    'margin': 0,
+    margin: 0,
   },
 });
 

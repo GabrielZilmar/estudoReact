@@ -61,12 +61,14 @@ class Register extends React.Component {
     error: false,
     success: false,
     errorMessage: undefined,
+    showPassword: false,
     errors: {
       firstName: false,
       lastName: false,
       email: false,
       password: false,
       passwordConfirm: false,
+      matchPassword: false,
     },
     firstName: undefined,
     lastName: undefined,
@@ -88,57 +90,76 @@ class Register extends React.Component {
       password,
       passwordConfirm,
     });
-    console.log(errors.Errors);
 
     if (errors.Errors) {
       for (let i = 0; i < errors.Errors.length; i +=1 ) {
         if (errors.Errors[i].includes('first name')) {
           this.setState({
             error: true,
+            success: false,
             errors: {
               ...this.state.errors,
               firstName: true,
             },
+            errorMessage: 'All fields are mandatory!',
           });
         } else if (errors.Errors[i].includes('last name')) {
           this.setState({
             error: true,
+            success: false,
             errors: {
               ...this.state.errors,
               lastName: true,
             },
+            errorMessage: 'All fields are mandatory!',
           });
         } else if (errors.Errors[i].includes('e-mail')) {
           this.setState({
             error: true,
+            success: false,
             errors: {
               ...this.state.errors,
               email: true,
             },
+            errorMessage: 'All fields are mandatory!',
           });
         } else if (errors.Errors[i].includes('password')) {
           if (errors.Errors[i].includes('confirm')) {
             this.setState({
               error: true,
+              success: false,
               errors: {
                 ...this.state.errors,
                 passwordConfirm: true,
+                errorMessage: 'All fields are mandatory!',
               },
+              errorMessage: 'All fields are mandatory!',
             });
           } else {
             this.setState({
               error: true,
+              success: false,
               errors: {
                 ...this.state.errors,
                 password: true,
               },
+              errorMessage: 'All fields are mandatory!',
             });
           }
+        } else if (errors.Errors[i].includes('Match')) {
+          this.setState({
+            error: true,
+            success: false,
+            errors: {
+              ...this.state.errors,
+              matchPassword: true,
+            },
+            errorMessage: errors.Errors[i],
+          });
         }
       }
-      this.setState({errorMessage: 'All fields are mandatory!'});
     } else {
-      this.setState({success: true});
+      this.setState({error: false, success: true});
     }
   }
 
@@ -149,7 +170,7 @@ class Register extends React.Component {
    */
   handleClose(event, reason) {
     if (reason !== 'clickaway') {
-      this.setState({error: false});
+      this.setState({error: false, success: false});
     }
   }
 
@@ -286,10 +307,13 @@ class Register extends React.Component {
                             </Grid>
                             <Grid item xs={6}>
                               <TextField
-                                error={this.state.errors.password}
+                                error={
+                                  this.state.errors.password ||
+                                   this.state.errors.matchPassword
+                                }
                                 helperText={this.state.errors.password ?
-                               'The password is mandatory' :
-                               'Your Password'}
+                                  'The password is mandatory' :
+                                  'Your Password'}
                                 variant="outlined"
                                 margin="normal"
                                 required
@@ -297,48 +321,66 @@ class Register extends React.Component {
                                 id="password"
                                 name="password"
                                 label="Password"
-                                type="password"
+                                type={
+                                  this.state.showPassword ?
+                                  'text' :
+                                  'password'}
                                 onChange={(event)=>{
                                   this.setState({
                                     password: event.target.value,
                                     errors: {
                                       ...this.state.errors,
                                       password: false,
+                                      matchPassword: false,
                                     },
                                   });
                                 }}
                               />
                             </Grid>
                             <Grid item xs={6}>
-                              <TextField
-                                error={this.state.errors.passwordConfirm}
-                                helperText={this.state.errors.passwordConfirm ?
+                              <TextField error={
+                                this.state.errors.passwordConfirm ||
+                                   this.state.errors.matchPassword
+                              }
+                              helperText={this.state.errors.passwordConfirm ?
                                'The confirm password is mandatory' :
-                               'Your Password'}
-                                variant="outlined"
-                                margin="normal"
-                                required
-                                fullWidth
-                                id="confirm"
-                                name="password"
-                                label="Confirm"
-                                type="password"
-                                onChange={(event)=>{
-                                  this.setState({
-                                    passwordConfirm: event.target.value,
-                                    errors: {
-                                      ...this.state.errors,
-                                      passwordConfirm: false,
-                                    },
-                                  });
-                                }}
+                               'Confirm your Password'}
+                              variant="outlined"
+                              margin="normal"
+                              required
+                              fullWidth
+                              id="confirm"
+                              name="password"
+                              label="Confirm"
+                              type={
+                                this.state.showPassword ?
+                                'text' :
+                                'password'}
+                              onChange={(event)=>{
+                                this.setState({
+                                  passwordConfirm: event.target.value,
+                                  errors: {
+                                    ...this.state.errors,
+                                    passwordConfirm: false,
+                                    matchPassword: false,
+                                  },
+                                });
+                              }}
                               />
                             </Grid>
 
                             <Grid item xs={6}>
                               <FormControlLabel
                                 control={
-                                  <Checkbox value="showPass" color="primary" />
+                                  <Checkbox
+                                    value="showPass"
+                                    color="primary"
+                                    onChange={(event)=>{
+                                      this.setState({
+                                        showPassword: event.target.checked,
+                                      });
+                                    }}
+                                  />
                                 }
                                 label="Show password"
                               />
@@ -424,7 +466,7 @@ class Register extends React.Component {
               vertical: 'top',
               horizontal: 'right',
             }}
-            open={this.state.error}
+            open={this.state.success}
             TransitionComponent={this.slideTransition}
             autoHideDuration={5000}
             onClose={this.handleClose.bind(this)}

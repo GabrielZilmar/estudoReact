@@ -23,7 +23,7 @@ export default {
     return schema.validate(registration, options)
         .then((valid) => {
           if (valid.password !== valid.passwordConfirm) {
-            return ['Passwords Must Match'];
+            return {Errors: ['Passwords Must Match!']};
           }
           return true;
         })

@@ -20,12 +20,11 @@ import {
   Slide,
 } from '@material-ui/core';
 import {Alert} from '@material-ui/lab';
-
+import Copyright from '../../components/copyright';
 import {Lock} from '@material-ui/icons';
 import CloseIcon from '@material-ui/icons/Close';
 
-import Copyright from '../../components/copyright';
-
+import validate from '../../validator/login';
 
 const styles = (theme) => ({
   paper: {
@@ -65,6 +64,7 @@ const styles = (theme) => ({
 class Login extends React.Component {
   state = {
     error: false,
+    errorMessage: undefined,
     errorEmail: false,
     errorPassword: false,
     errorLogin: false,
@@ -75,11 +75,36 @@ class Login extends React.Component {
   /**
    * Check entries and validate the login
    */
-  handleSubmit() {
+  async handleSubmit() {
     const {email, password} = this.state;
 
-    if (!email || !password) {
-      this.setState({error: true});
+    const errors = await validate.loginValidate({email, password});
+
+    if (errors.Errors) {
+      for (let i = 0; i < errors.Errors.length; i +=1 ) {
+        if (errors.Errors[i].includes('e-mail')) {
+          this.setState({error: true, errorEmail: true});
+        } else if (errors.Errors[i].includes('password')) {
+          this.setState({error: true, errorPassword: true});
+        }
+      }
+      this.setState({errorMessage: 'All fields are mandatory!'});
+    } else {
+      this.handleLogin();
+    }
+  }
+
+  /**
+   * Check if the password and email are a valid user
+   */
+  handleLogin() {
+    const {email, password} = this.state;
+
+    if (email === 'admin@email.com' && password === '123') {
+      const {history} = this.props;
+      history.push('/home');
+    } else {
+      this.setState({error: true, errorMessage: 'Invalid email or password.'});
     }
   }
 
@@ -138,7 +163,7 @@ class Login extends React.Component {
           >
             <Alert
               onClose={this.handleClose.bind(this)} severity="error">
-          All fields are mandatory!
+              {this.state.errorMessage}
             </Alert>
           </Snackbar>
         )
@@ -173,7 +198,10 @@ class Login extends React.Component {
                 autoComplete="email"
                 autoFocus
                 onChange={(event)=>{
-                  this.setState({email: event.target.value});
+                  this.setState({
+                    email: event.target.value,
+                    errorEmail: false,
+                  });
                 }}
               />
               <TextField
@@ -191,7 +219,10 @@ class Login extends React.Component {
                 id="password"
                 autoComplete="current-password"
                 onChange={(event)=>{
-                  this.setState({password: event.target.value});
+                  this.setState({
+                    password: event.target.value,
+                    errorPassword: false,
+                  });
                 }}
               />
               <FormControlLabel
@@ -233,6 +264,7 @@ class Login extends React.Component {
 
 Login.propTypes = {
   classes: PropTypes.object.isRequired,
+  history: PropTypes.func.isRequired,
 };
 
 export default withStyles(styles)(Login);

@@ -13,8 +13,10 @@ import {
   TableContainer,
   TableHead,
   TableRow,
+  TablePagination,
   Typography,
   Paper,
+  Card,
 } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
@@ -23,6 +25,9 @@ import todos from '../../service/api/apiTodos';
 import users from '../../service/api/apiUsers';
 
 const styles = (theme) => ({
+  root: {
+    width: '90%',
+  },
   tableHead: {
     backgroundColor: '#000!important',
     color: '#fff!important',
@@ -30,6 +35,7 @@ const styles = (theme) => ({
   tableRow: {
     backgroundColor: 'lightgrey',
     color: 'white',
+    maxHeight: '80vh',
   },
 });
 
@@ -39,6 +45,18 @@ const useRowStyles = makeStyles({
     '& > *': {
       borderBottom: 'unset',
     },
+  },
+  cardCompleted: {
+    display: 'flex',
+    justifyContent: 'center',
+    color: 'green',
+    background: '#90EE90',
+  },
+  cardNotCompleted: {
+    display: 'flex',
+    justifyContent: 'center',
+    color: 'red',
+    background: '#E9967A',
   },
 });
 
@@ -65,9 +83,15 @@ function Row(props) {
           </IconButton>
         </TableCell>
         <TableCell component="th" scope="row">
-          {row.name}
+          {row.title}
         </TableCell>
-        <TableCell align="right">{row.calories}</TableCell>
+        <TableCell align="right">
+          <Card className={row.completed ?
+            classes.cardCompleted :
+            classes.cardNotCompleted}>
+            {row.completed ? 'COMPLETED' : 'NOT COMPLETED'}
+          </Card>
+        </TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{paddingBottom: 0, paddingTop: 0}} colSpan={6}>
@@ -115,9 +139,9 @@ function Row(props) {
 
 Row.propTypes = {
   row: PropTypes.shape({
-    calories: PropTypes.number.isRequired,
-    carbs: PropTypes.number.isRequired,
-    fat: PropTypes.number.isRequired,
+    name: PropTypes.string.isRequired,
+    title: PropTypes.string.isRequired,
+    completed: PropTypes.bool.isRequired,
     history: PropTypes.arrayOf(
         PropTypes.shape({
           amount: PropTypes.number.isRequired,
@@ -141,6 +165,8 @@ class Home extends React.Component {
       todos: [],
       users: [],
       rows: [],
+      page: 0,
+      rowsPerPage: 10,
     };
 
     /**
@@ -239,6 +265,28 @@ class Home extends React.Component {
     };
 
     /**
+     * Change table page
+     * @param {event} event
+     * @param {number} newPage
+     */
+    handleChangePage(event, newPage) {
+      this.setState({
+        page: newPage,
+      });
+    };
+
+    /**
+     * Change table rows per page
+     * @param {event} event
+     */
+    handleChangeRowsPerPage(event) {
+      this.setState({
+        rowsPerPage: +event.target.value,
+        page: 0,
+      });
+    };
+
+    /**
  * Return Login Element
  * @return {Element}
  */
@@ -254,26 +302,43 @@ class Home extends React.Component {
           p={1}
           height="100vh"
         >
-          <TableContainer component={Paper} className={classes.tableRow}>
-            <Table aria-label="collapsible table" >
-              <TableHead >
-                <TableRow >
-                  <TableCell className={classes.tableHead}/>
-                  <TableCell align="left" className={classes.tableHead}>
+          <Paper className={classes.root}>
+            <TableContainer component={Paper} className={classes.tableRow}>
+              <Table aria-label="collapsible table" stickyHeader >
+                <TableHead >
+                  <TableRow >
+                    <TableCell className={classes.tableHead}/>
+                    <TableCell align="left" className={classes.tableHead}>
                   Title
-                  </TableCell>
-                  <TableCell align="right" className={classes.tableHead}>
+                    </TableCell>
+                    <TableCell align="right" className={classes.tableHead}>
                   Completed
-                  </TableCell>
-                </TableRow>
-              </TableHead>
-              <TableBody>
-                {this.state.rows.map((row) => (
-                  <Row key={row.key} row={row} />
-                ))}
-              </TableBody>
-            </Table>
-          </TableContainer>
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {this.state.rows
+                      .slice(
+                          this.state.page * this.state.rowsPerPage,
+                          this.state.page * this.state.rowsPerPage +
+                          this.state.rowsPerPage,
+                      )
+                      .map((row) => (
+                        <Row key={row.key} row={row} />
+                      ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+            <TablePagination
+              rowsPerPageOptions={[10, 25, 100]}
+              component="div"
+              count={this.state.rows.length}
+              rowsPerPage={this.state.rowsPerPage}
+              page={this.state.page}
+              onChangePage={this.handleChangePage.bind(this)}
+              onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
+            />
+          </Paper>
         </Box>
       );
     }

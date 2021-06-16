@@ -19,6 +19,9 @@ import {
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
 
+import todos from '../../service/api/apiTodos';
+import users from '../../service/api/apiUsers';
+
 const styles = (theme) => ({
   tableHead: {
     backgroundColor: '#000!important',
@@ -65,9 +68,6 @@ function Row(props) {
           {row.name}
         </TableCell>
         <TableCell align="right">{row.calories}</TableCell>
-        <TableCell align="right">{row.fat}</TableCell>
-        <TableCell align="right">{row.carbs}</TableCell>
-        <TableCell align="right">{row.protein}</TableCell>
       </TableRow>
       <TableRow>
         <TableCell style={{paddingBottom: 0, paddingTop: 0}} colSpan={6}>
@@ -135,90 +135,148 @@ Row.propTypes = {
  * Class Home
  */
 class Home extends React.Component {
-  state = {
-    open: false,
-  }
+    state = {
+      open: false,
+      loading: false,
+      todos: [],
+      users: [],
+      rows: [],
+    };
 
-  /**
- * Return Login Element
- * @return {Element}
- */
-  render() {
-    const {classes} = this.props;
+    /**
+   * Function componentDidMount
+   */
+    async componentDidMount() {
+      const {users} = this.state;
+      if (this.state.todos.length === 0 || users.length === 0) {
+        this.setState({loading: true});
+
+        await this.handleTodos();
+        await this.handleUsers();
+
+        this.setState({
+          rows: this.createRows(),
+          loading: false,
+        });
+      }
+    }
+
+    /**
+   * Get todos from api
+   */
+    async handleTodos() {
+      const response = await todos.list();
+      this.setState({
+        todos: response.data.length > 0 ? response.data : [],
+      });
+    }
+
+    /**
+   * Get users from api
+   */
+    async handleUsers() {
+      const response = await users.list();
+
+      this.setState({
+        users: response.data.length > 0 ? response.data : [],
+      });
+    }
 
     /**
      * Create rows data
+     * @param {number} key
+     * @param {string} title
+     * @param {string} completed
      * @param {string} name
-     * @param {string} calories
-     * @param {string} fat
-     * @param {string} carbs
-     * @param {string} protein
-     * @param {string} price
+     * @param {string} username
+     * @param {string} email
      * @return {Element} react element
      */
-    function createData(name, calories, fat, carbs, protein, price) {
+    createData(key, title, completed, name, username, email) {
       return {
+        key,
+        title,
+        completed,
         name,
-        calories,
-        fat,
-        carbs,
-        protein,
-        price,
+        username,
+        email,
         history: [
           {date: '2020-01-05', customerId: '11091700', amount: 3},
-          {date: '2020-01-02', customerId: 'Anonymous', amount: 1},
         ],
       };
     }
 
-    const rows = [
-      createData('Frozen yoghurt', 159, 6.0, 24, 4.0, 3.99),
-      createData('Ice cream sandwich', 237, 9.0, 37, 4.3, 4.99),
-      createData('Eclair', 262, 16.0, 24, 6.0, 3.79),
-      createData('Cupcake', 305, 3.7, 67, 4.3, 2.5),
-      createData('Gingerbread', 356, 16.0, 49, 3.9, 1.5),
-    ];
+    /**
+           * Create rows of table
+           * @return {array} rows array
+           */
+    createRows() {
+      const {users, todos} = this.state;
 
-    return (
-      <Box
-        display="flex"
-        alignItems="center"
-        justifyContent="center"
-        p={1}
-        height="100vh"
-      >
-        <TableContainer component={Paper} className={classes.tableRow}>
-          <Table aria-label="collapsible table" >
-            <TableHead >
-              <TableRow >
-                <TableCell className={classes.tableHead}/>
-                <TableCell className={classes.tableHead}>
-                  Dessert (100g serving)
-                </TableCell>
-                <TableCell align="right" className={classes.tableHead}>
-                  Calories
-                </TableCell>
-                <TableCell align="right" className={classes.tableHead}>
-                  Fat&nbsp;(g)
-                </TableCell>
-                <TableCell align="right" className={classes.tableHead}>
-                  Carbs&nbsp;(g)
-                </TableCell>
-                <TableCell align="right" className={classes.tableHead}>
-                  Protein&nbsp;(g)
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {rows.map((row) => (
-                <Row key={row.name} row={row} />
-              ))}
-            </TableBody>
-          </Table>
-        </TableContainer>
-      </Box>
-    );
-  }
+      const rows = [];
+
+      if (users && todos) {
+        const mapUsers = [];
+        for (let i = 0; i < users.length; i++) {
+          mapUsers[users[i].id] = users[i];
+        }
+
+        for (let i = 0; i < todos.length; i++) {
+          rows.push(
+              this.createData(
+                  i,
+                  todos[i].title,
+                  todos[i].completed,
+                  mapUsers[todos[i].userId].name,
+                  mapUsers[todos[i].userId].username,
+                  mapUsers[todos[i].userId].email,
+              ),
+          );
+        }
+      }
+
+      return rows;
+    };
+
+    /**
+ * Return Login Element
+ * @return {Element}
+ */
+    render() {
+      const {classes} = this.props;
+
+
+      return (
+        <Box
+          display="flex"
+          alignItems="center"
+          justifyContent="center"
+          p={1}
+          height="100vh"
+        >
+          <TableContainer component={Paper} className={classes.tableRow}>
+            <Table aria-label="collapsible table" >
+              <TableHead >
+                <TableRow >
+                  <TableCell className={classes.tableHead}/>
+                  <TableCell align="left" className={classes.tableHead}>
+                  Title
+                  </TableCell>
+                  <TableCell align="right" className={classes.tableHead}>
+                  Completed
+                  </TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {this.state.rows.map((row) => (
+                  <Row key={row.key} row={row} />
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
+        </Box>
+      );
+    }
 }
 
 Home.propTypes = {

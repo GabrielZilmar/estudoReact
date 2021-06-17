@@ -25,17 +25,32 @@ import todos from '../../service/api/apiTodos';
 import users from '../../service/api/apiUsers';
 
 const styles = (theme) => ({
-  root: {
+  '@global': {
+    '*::-webkit-scrollbar': {
+      width: '0.5em',
+    },
+    '*::-webkit-scrollbar-track': {
+      '-webkit-box-shadow': 'inset 0 0 6px rgba(0,0,0,0.00)',
+    },
+    '*::-webkit-scrollbar-thumb': {
+      backgroundColor: 'rgba(0,0,0,.4)',
+      outline: '1px solid slategrey',
+    },
+  },
+  'root': {
     width: '90%',
   },
-  tableHead: {
+  'tableHead': {
     backgroundColor: '#000!important',
     color: '#fff!important',
   },
-  tableRow: {
+  'tableContainer': {
     backgroundColor: 'lightgrey',
     color: 'white',
     maxHeight: '80vh',
+  },
+  'tableBody': {
+    overflow: 'auto',
   },
 });
 
@@ -71,7 +86,7 @@ function Row(props) {
   const classes = useRowStyles();
 
   return (
-    <React.Fragment>
+    <>
       <TableRow className={classes.root}>
         <TableCell>
           <IconButton
@@ -98,60 +113,48 @@ function Row(props) {
           <Collapse in={open} timeout="auto" unmountOnExit>
             <Box margin={1}>
               <Typography variant="h6" gutterBottom component="div">
-                  History
+                  User
               </Typography>
               <Table size="small" aria-label="purchases">
                 <TableHead>
                   <TableRow>
-                    <TableCell>Date</TableCell>
-                    <TableCell>Customer</TableCell>
-                    <TableCell align="right">Amount</TableCell>
-                    <TableCell align="right">Total price ($)</TableCell>
+                    <TableCell>Name</TableCell>
+                    <TableCell>E-mail</TableCell>
+                    <TableCell align="right">Username</TableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
-                  {row.history.map((historyRow) => (
-                    <TableRow key={historyRow.date}>
-                      <TableCell component="th" scope="row">
-                        {historyRow.date}
-                      </TableCell>
-                      <TableCell>{historyRow.customerId}</TableCell>
-                      <TableCell
-                        align="right"
-                      >
-                        {historyRow.amount}
-                      </TableCell>
-                      <TableCell align="right">
-                        {Math.round(historyRow.amount * row.price * 100) /
-                           100}
-                      </TableCell>
-                    </TableRow>
-                  ))}
+                  <TableRow key={row.key}>
+                    <TableCell component="th" scope="row">
+                      {row.name}
+                    </TableCell>
+                    <TableCell>
+                      {row.email}
+                    </TableCell>
+                    <TableCell
+                      align="right"
+                    >
+                      {row.username}
+                    </TableCell>
+                  </TableRow>
                 </TableBody>
               </Table>
             </Box>
           </Collapse>
         </TableCell>
       </TableRow>
-    </React.Fragment>
+    </>
   );
 }
 
 Row.propTypes = {
   row: PropTypes.shape({
-    name: PropTypes.string.isRequired,
+    key: PropTypes.number.isRequired,
     title: PropTypes.string.isRequired,
     completed: PropTypes.bool.isRequired,
-    history: PropTypes.arrayOf(
-        PropTypes.shape({
-          amount: PropTypes.number.isRequired,
-          customerId: PropTypes.string.isRequired,
-          date: PropTypes.string.isRequired,
-        }),
-    ).isRequired,
     name: PropTypes.string.isRequired,
-    price: PropTypes.number.isRequired,
-    protein: PropTypes.number.isRequired,
+    email: PropTypes.string.isRequired,
+    username: PropTypes.string.isRequired,
   }).isRequired,
 };
 
@@ -226,9 +229,6 @@ class Home extends React.Component {
         name,
         username,
         email,
-        history: [
-          {date: '2020-01-05', customerId: '11091700', amount: 3},
-        ],
       };
     }
 
@@ -293,7 +293,6 @@ class Home extends React.Component {
     render() {
       const {classes} = this.props;
 
-
       return (
         <Box
           display="flex"
@@ -303,20 +302,23 @@ class Home extends React.Component {
           height="100vh"
         >
           <Paper className={classes.root}>
-            <TableContainer component={Paper} className={classes.tableRow}>
-              <Table aria-label="collapsible table" stickyHeader >
+            <TableContainer
+              component={Paper}
+              className={classes.tableContainer}
+            >
+              <Table aria-label="collapsible table" stickyHeader>
                 <TableHead >
                   <TableRow >
                     <TableCell className={classes.tableHead}/>
                     <TableCell align="left" className={classes.tableHead}>
-                  Title
+                      Title
                     </TableCell>
                     <TableCell align="right" className={classes.tableHead}>
-                  Completed
+                      Completed
                     </TableCell>
                   </TableRow>
                 </TableHead>
-                <TableBody>
+                <TableBody className={classes.tableBody}>
                   {this.state.rows
                       .slice(
                           this.state.page * this.state.rowsPerPage,

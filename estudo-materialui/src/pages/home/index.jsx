@@ -17,6 +17,7 @@ import {
   Typography,
   Paper,
   Card,
+  CircularProgress,
 } from '@material-ui/core';
 import KeyboardArrowDownIcon from '@material-ui/icons/KeyboardArrowDown';
 import KeyboardArrowUpIcon from '@material-ui/icons/KeyboardArrowUp';
@@ -301,6 +302,7 @@ class Home extends React.Component {
           p={1}
           height="100vh"
         >
+          {!this.state.loading &&
           <Paper className={classes.root}>
             <TableContainer
               component={Paper}
@@ -332,6 +334,7 @@ class Home extends React.Component {
               </Table>
             </TableContainer>
             <TablePagination
+              className={classes.tableHead}
               rowsPerPageOptions={[10, 25, 100]}
               component="div"
               count={this.state.rows.length}
@@ -341,6 +344,11 @@ class Home extends React.Component {
               onChangeRowsPerPage={this.handleChangeRowsPerPage.bind(this)}
             />
           </Paper>
+          }
+          {
+            this.state.loading &&
+            <CircularProgress />
+          }
         </Box>
       );
     }
